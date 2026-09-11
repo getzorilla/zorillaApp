@@ -1,0 +1,95 @@
+{
+  "id": "telegram",
+  "label": "Telegram",
+  "category": "action",
+  "description": "Send messages from a bot, and hear back.",
+  "docs": "https://core.telegram.org/bots#how-do-i-create-a-bot",
+  "credential": {
+    "description": "Make a bot by messaging @BotFather. Message your bot once, then read the chat id from api.telegram.org/bot<token>/getUpdates.",
+    "fields": [
+      {
+        "key": "botToken",
+        "label": "Bot token",
+        "secret": true,
+        "required": true,
+        "placeholder": "123456:ABC-\u2026"
+      },
+      {
+        "key": "chatId",
+        "label": "Default chat id",
+        "required": false,
+        "placeholder": "123456789"
+      }
+    ],
+    "auth": {},
+    "test": {
+      "method": "GET",
+      "url": "https://api.telegram.org/bot{{ botToken }}/getMe"
+    },
+    "identity": {
+      "bot": "result.username"
+    }
+  },
+  "actions": [
+    {
+      "key": "send",
+      "label": "Send a Telegram message",
+      "params": [
+        {
+          "key": "text",
+          "label": "Message",
+          "type": "textarea"
+        },
+        {
+          "key": "chatId",
+          "label": "Chat id",
+          "type": "text",
+          "description": "Leave blank to use the one saved with the key."
+        }
+      ],
+      "fallbacks": {
+        "chatId": "{{ key.chatId }}"
+      },
+      "request": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot{{ key.botToken }}/sendMessage",
+        "json": {
+          "chat_id": "{{ chatId }}",
+          "text": "{{ text }}"
+        }
+      },
+      "okPath": "ok",
+      "output": {
+        "messageId": "result.message_id"
+      },
+      "errorPath": "description"
+    },
+    {
+      "key": "messages",
+      "label": "New Telegram message",
+      "description": "Fires when somebody messages your bot. One item per message.",
+      "params": [],
+      "request": {
+        "method": "GET",
+        "url": "https://api.telegram.org/bot{{ key.botToken }}/getUpdates",
+        "query": {
+          "limit": "100",
+          "timeout": "0"
+        }
+      },
+      "itemsPath": "result",
+      "okPath": "ok",
+      "errorPath": "description",
+      "output": {
+        "updateId": "update_id",
+        "text": "message.text",
+        "chatId": "message.chat.id",
+        "from": "message.from.username",
+        "raw": "$"
+      },
+      "trigger": {
+        "dedupeBy": "updateId"
+      }
+    }
+  ]
+}

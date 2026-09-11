@@ -1,0 +1,24 @@
+{
+  "id": "github-dark",
+  "label": "GitHub Dark",
+  "appearance": "dark",
+  "author": "GitHub",
+  "colors": {
+    "bg": "#0D1117",
+    "raise": "#161B22",
+    "sunk": "#010409",
+    "line": "#30363D",
+    "text": "#C9D1D9",
+    "dim": "#8B949E",
+    "dimmer": "#6E7681",
+    "accent": "#58A6FF",
+    "onAccent": "#010409",
+    "ok": "#3FB950",
+    "warn": "#D29922",
+    "bad": "#F85149",
+    "skip": "#484F58",
+    "grid": "#161B22",
+    "wire": "#30363D",
+    "wireHot": "#58A6FF"
+  }
+}

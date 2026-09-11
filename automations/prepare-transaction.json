@@ -1,0 +1,56 @@
+{
+  "name": "demo07: Prepare a Transaction",
+  "folder": "Examples",
+  "notes": "Works out exactly what a transaction would do and cost, and signs nothing. Needs no keys.",
+  "active": false,
+  "nodes": [
+    {
+      "id": "start",
+      "type": "core.manual",
+      "params": {},
+      "position": {
+        "x": 40,
+        "y": 170
+      }
+    },
+    {
+      "id": "prep",
+      "type": "web3.prepare",
+      "params": {
+        "chain": "sepolia",
+        "to": "vitalik.eth",
+        "value": "0.001",
+        "from": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+      },
+      "position": {
+        "x": 300,
+        "y": 170
+      }
+    },
+    {
+      "id": "say",
+      "type": "output.log",
+      "params": {
+        "message": "would cost {{ $json.estimatedFeeEth }} ETH in fees; signed: {{ $json.signed }}"
+      },
+      "position": {
+        "x": 560,
+        "y": 170
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "start",
+      "fromPort": "main",
+      "to": "prep",
+      "toPort": "main"
+    },
+    {
+      "from": "prep",
+      "fromPort": "main",
+      "to": "say",
+      "toPort": "main"
+    }
+  ]
+}

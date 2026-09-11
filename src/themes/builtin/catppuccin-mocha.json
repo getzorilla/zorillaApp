@@ -1,0 +1,24 @@
+{
+  "id": "catppuccin-mocha",
+  "label": "Catppuccin Mocha",
+  "appearance": "dark",
+  "author": "Catppuccin",
+  "colors": {
+    "bg": "#1E1E2E",
+    "raise": "#26263B",
+    "sunk": "#11111B",
+    "line": "#313244",
+    "text": "#CDD6F4",
+    "dim": "#A6ADC8",
+    "dimmer": "#6C7086",
+    "accent": "#89B4FA",
+    "onAccent": "#11111B",
+    "ok": "#A6E3A1",
+    "warn": "#F9E2AF",
+    "bad": "#F38BA8",
+    "skip": "#45475A",
+    "grid": "#2A2A40",
+    "wire": "#45475A",
+    "wireHot": "#CBA6F7"
+  }
+}

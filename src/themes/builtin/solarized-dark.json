@@ -1,0 +1,24 @@
+{
+  "id": "solarized-dark",
+  "label": "Solarized Dark",
+  "appearance": "dark",
+  "author": "Ethan Schoonover",
+  "colors": {
+    "bg": "#002B36",
+    "raise": "#073642",
+    "sunk": "#00212B",
+    "line": "#0E4A58",
+    "text": "#93A1A1",
+    "dim": "#839496",
+    "dimmer": "#586E75",
+    "accent": "#268BD2",
+    "onAccent": "#002B36",
+    "ok": "#859900",
+    "warn": "#B58900",
+    "bad": "#DC322F",
+    "skip": "#586E75",
+    "grid": "#073642",
+    "wire": "#586E75",
+    "wireHot": "#2AA198"
+  }
+}

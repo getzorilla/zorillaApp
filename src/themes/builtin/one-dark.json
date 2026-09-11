@@ -1,0 +1,24 @@
+{
+  "id": "one-dark",
+  "label": "One Dark",
+  "appearance": "dark",
+  "author": "Atom",
+  "colors": {
+    "bg": "#282C34",
+    "raise": "#2F343E",
+    "sunk": "#21252B",
+    "line": "#3E4451",
+    "text": "#ABB2BF",
+    "dim": "#8B92A0",
+    "dimmer": "#5C6370",
+    "accent": "#61AFEF",
+    "onAccent": "#10131A",
+    "ok": "#98C379",
+    "warn": "#E5C07B",
+    "bad": "#E06C75",
+    "skip": "#4B5263",
+    "grid": "#333842",
+    "wire": "#4B5263",
+    "wireHot": "#C678DD"
+  }
+}

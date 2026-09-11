@@ -1,0 +1,24 @@
+{
+  "id": "rose-pine",
+  "label": "Ros\u00e9 Pine",
+  "appearance": "dark",
+  "author": "Ros\u00e9 Pine",
+  "colors": {
+    "bg": "#191724",
+    "raise": "#1F1D2E",
+    "sunk": "#12111C",
+    "line": "#26233A",
+    "text": "#E0DEF4",
+    "dim": "#908CAA",
+    "dimmer": "#6E6A86",
+    "accent": "#C4A7E7",
+    "onAccent": "#191724",
+    "ok": "#9CCFD8",
+    "warn": "#F6C177",
+    "bad": "#EB6F92",
+    "skip": "#403D52",
+    "grid": "#211F30",
+    "wire": "#403D52",
+    "wireHot": "#EB6F92"
+  }
+}

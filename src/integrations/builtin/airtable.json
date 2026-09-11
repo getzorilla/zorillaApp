@@ -1,0 +1,139 @@
+{
+  "id": "airtable",
+  "label": "Airtable",
+  "category": "action",
+  "description": "Records in a base.",
+  "docs": "https://airtable.com/create/tokens",
+  "credential": {
+    "fields": [
+      {
+        "key": "token",
+        "label": "Personal access token",
+        "secret": true,
+        "required": true,
+        "placeholder": "pat…"
+      }
+    ],
+    "auth": {
+      "headers": {
+        "Authorization": "Bearer {{ token }}"
+      }
+    },
+    "test": {
+      "method": "GET",
+      "url": "https://api.airtable.com/v0/meta/bases"
+    }
+  },
+  "actions": [
+    {
+      "key": "list",
+      "label": "Read Airtable records",
+      "description": "One item per record.",
+      "params": [
+        {
+          "key": "baseId",
+          "label": "Base id",
+          "type": "text",
+          "placeholder": "app…"
+        },
+        {
+          "key": "table",
+          "label": "Table",
+          "type": "text"
+        },
+        {
+          "key": "limit",
+          "label": "How many at most",
+          "type": "number",
+          "default": 100,
+          "min": 1,
+          "description": "Zorilla keeps asking for more pages until it has this many, and says in the log whether any were left behind."
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "https://api.airtable.com/v0/{{ baseId }}/{{ table }}",
+        "query": {}
+      },
+      "itemsPath": "records",
+      "errorPath": "error.message",
+      "pagination": {
+        "size": 100,
+        "sizeInto": {
+          "query": "pageSize"
+        },
+        "next": {
+          "cursor": "offset"
+        },
+        "into": {
+          "query": "offset"
+        }
+      }
+    },
+    {
+      "key": "create",
+      "label": "Add an Airtable record",
+      "params": [
+        {
+          "key": "baseId",
+          "label": "Base id",
+          "type": "text",
+          "placeholder": "app…"
+        },
+        {
+          "key": "table",
+          "label": "Table",
+          "type": "text"
+        },
+        {
+          "key": "fields",
+          "label": "Fields",
+          "type": "keyvalue",
+          "default": []
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "https://api.airtable.com/v0/{{ baseId }}/{{ table }}",
+        "json": {
+          "fields": "{{ fields }}"
+        }
+      },
+      "output": {
+        "id": "id"
+      },
+      "errorPath": "error.message"
+    },
+    {
+      "key": "newRecord",
+      "label": "New Airtable record",
+      "description": "Fires when a record is added. One item per record.",
+      "params": [
+        {
+          "key": "baseId",
+          "label": "Base id",
+          "type": "text"
+        },
+        {
+          "key": "table",
+          "label": "Table",
+          "type": "text"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "https://api.airtable.com/v0/{{ baseId }}/{{ table }}",
+        "query": {
+          "pageSize": "25",
+          "sort[0][field]": "Created",
+          "sort[0][direction]": "desc"
+        }
+      },
+      "itemsPath": "records",
+      "errorPath": "error.message",
+      "trigger": {
+        "dedupeBy": "id"
+      }
+    }
+  ]
+}

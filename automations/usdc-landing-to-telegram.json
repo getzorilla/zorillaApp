@@ -1,0 +1,86 @@
+{
+  "name": "demo08: USDC Landing to Telegram",
+  "folder": "Examples",
+  "notes": "Tells you on Telegram when USDC arrives in a wallet, once per transaction. Needs a Telegram key named telegram_key.",
+  "active": false,
+  "nodes": [
+    {
+      "id": "clock",
+      "type": "core.schedule",
+      "params": {
+        "mode": "every",
+        "every": 5,
+        "unit": "minutes"
+      },
+      "position": {
+        "x": 40,
+        "y": 170
+      }
+    },
+    {
+      "id": "events",
+      "type": "web3.logs",
+      "params": {
+        "chain": "ethereum",
+        "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "event": "event Transfer(address indexed from, address indexed to, uint256 value)",
+        "match": [
+          {
+            "name": "to",
+            "value": "0x28C6c06298d514Db089934071355E5743bf21d60"
+          }
+        ],
+        "blocks": 300,
+        "rpc": ""
+      },
+      "position": {
+        "x": 300,
+        "y": 170
+      }
+    },
+    {
+      "id": "fresh",
+      "type": "logic.once",
+      "params": {
+        "key": "{{ $json.transactionHash }}"
+      },
+      "position": {
+        "x": 560,
+        "y": 170
+      }
+    },
+    {
+      "id": "tell",
+      "type": "telegram.send",
+      "params": {
+        "credential": "telegram_key",
+        "text": "USDC in: {{ $json.args.value }} raw units, tx {{ $json.transactionHash }}",
+        "chatId": ""
+      },
+      "position": {
+        "x": 820,
+        "y": 170
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "clock",
+      "fromPort": "main",
+      "to": "events",
+      "toPort": "main"
+    },
+    {
+      "from": "events",
+      "fromPort": "main",
+      "to": "fresh",
+      "toPort": "main"
+    },
+    {
+      "from": "fresh",
+      "fromPort": "main",
+      "to": "tell",
+      "toPort": "main"
+    }
+  ]
+}

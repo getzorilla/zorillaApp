@@ -1,0 +1,73 @@
+{
+  "id": "openai",
+  "label": "ChatGPT",
+  "category": "action",
+  "description": "OpenAI's models.",
+  "docs": "https://platform.openai.com/api-keys",
+  "credential": {
+    "fields": [
+      {
+        "key": "apiKey",
+        "label": "API key",
+        "secret": true,
+        "required": true,
+        "placeholder": "sk-…"
+      }
+    ],
+    "auth": {
+      "headers": {
+        "Authorization": "Bearer {{ apiKey }}"
+      }
+    },
+    "test": {
+      "method": "GET",
+      "url": "https://api.openai.com/v1/models"
+    }
+  },
+  "actions": [
+    {
+      "key": "ask",
+      "label": "Ask ChatGPT",
+      "params": [
+        {
+          "key": "prompt",
+          "label": "Prompt",
+          "type": "textarea",
+          "description": "Put {{ $json.field }} in here to feed it whatever the previous step produced."
+        },
+        {
+          "key": "model",
+          "label": "Model",
+          "type": "text",
+          "default": "gpt-4o-mini",
+          "description": "Gpt-4o, gpt-4o-mini, o3-mini"
+        },
+        {
+          "key": "maxTokens",
+          "label": "Longest reply",
+          "type": "number",
+          "default": 1024
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "json": {
+          "model": "{{ model }}",
+          "max_completion_tokens": "{{ maxTokens }}",
+          "messages": [
+            {
+              "role": "user",
+              "content": "{{ prompt }}"
+            }
+          ]
+        }
+      },
+      "output": {
+        "text": "choices.0.message.content",
+        "model": "model"
+      },
+      "errorPath": "error.message"
+    }
+  ]
+}

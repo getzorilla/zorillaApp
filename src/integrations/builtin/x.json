@@ -1,0 +1,100 @@
+{
+  "id": "x",
+  "label": "X",
+  "category": "action",
+  "description": "Post to X, and search what is being said.",
+  "docs": "https://developer.x.com/en/portal/dashboard",
+  "credential": {
+    "description": "From the X developer portal. Posting needs a user access token, not the app-only bearer: open your project, Keys and tokens, and generate an access token with write permission.",
+    "fields": [
+      {
+        "key": "accessToken",
+        "label": "Access token",
+        "secret": true,
+        "required": true,
+        "placeholder": "AAAA…"
+      }
+    ],
+    "auth": {
+      "headers": {
+        "Authorization": "Bearer {{ accessToken }}"
+      }
+    },
+    "test": {
+      "method": "GET",
+      "url": "https://api.x.com/2/users/me"
+    },
+    "identity": {
+      "as": "data.username"
+    }
+  },
+  "actions": [
+    {
+      "key": "post",
+      "label": "Post to X",
+      "description": "Posts one message per item. 280 characters.",
+      "params": [
+        {
+          "key": "text",
+          "label": "Message",
+          "type": "textarea"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "https://api.x.com/2/tweets",
+        "json": {
+          "text": "{{ text }}"
+        }
+      },
+      "output": {
+        "id": "data.id",
+        "text": "data.text"
+      },
+      "errorPath": "detail"
+    },
+    {
+      "key": "search",
+      "label": "Search X",
+      "description": "Recent posts matching a search. One item per post.",
+      "params": [
+        {
+          "key": "query",
+          "label": "Search for",
+          "type": "text",
+          "placeholder": "robinhood chain -is:retweet"
+        },
+        {
+          "key": "limit",
+          "label": "How many at most",
+          "type": "number",
+          "default": 25,
+          "min": 10,
+          "description": "Zorilla keeps asking for more pages until it has this many."
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "https://api.x.com/2/tweets/search/recent",
+        "query": {
+          "query": "{{ query }}",
+          "tweet.fields": "created_at,author_id,public_metrics"
+        }
+      },
+      "itemsPath": "data",
+      "pagination": {
+        "size": 100,
+        "sizeInto": {
+          "query": "max_results"
+        },
+        "next": {
+          "cursor": "meta.next_token"
+        },
+        "into": {
+          "query": "next_token"
+        }
+      },
+      "errorPath": "detail"
+    }
+  ]
+}

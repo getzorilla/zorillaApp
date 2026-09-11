@@ -1,0 +1,137 @@
+{
+  "id": "notion",
+  "label": "Notion",
+  "category": "action",
+  "description": "Databases and pages.",
+  "docs": "https://www.notion.so/my-integrations",
+  "credential": {
+    "description": "Create an internal integration, then share the database with it from the page's Connections menu.",
+    "fields": [
+      {
+        "key": "token",
+        "label": "Integration secret",
+        "secret": true,
+        "required": true,
+        "placeholder": "ntn_…"
+      }
+    ],
+    "auth": {
+      "headers": {
+        "Authorization": "Bearer {{ token }}",
+        "Notion-Version": "2022-06-28"
+      }
+    },
+    "test": {
+      "method": "GET",
+      "url": "https://api.notion.com/v1/users/me"
+    },
+    "identity": {
+      "as": "bot.owner.user.name"
+    }
+  },
+  "actions": [
+    {
+      "key": "query",
+      "label": "Read a Notion database",
+      "description": "One item per row.",
+      "params": [
+        {
+          "key": "databaseId",
+          "label": "Database id",
+          "type": "text"
+        },
+        {
+          "key": "limit",
+          "label": "How many at most",
+          "type": "number",
+          "default": 100,
+          "min": 1,
+          "description": "Zorilla keeps asking for more pages until it has this many, and says in the log whether any were left behind."
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "https://api.notion.com/v1/databases/{{ databaseId }}/query",
+        "json": {}
+      },
+      "itemsPath": "results",
+      "errorPath": "message",
+      "pagination": {
+        "size": 100,
+        "sizeInto": {
+          "json": "page_size"
+        },
+        "next": {
+          "cursor": "next_cursor"
+        },
+        "more": "has_more",
+        "into": {
+          "json": "start_cursor"
+        }
+      }
+    },
+    {
+      "key": "createPage",
+      "label": "Add a Notion page",
+      "params": [
+        {
+          "key": "databaseId",
+          "label": "Database id",
+          "type": "text"
+        },
+        {
+          "key": "properties",
+          "label": "Properties",
+          "type": "code",
+          "default": "{\n  \"Name\": { \"title\": [{ \"text\": { \"content\": \"Hello\" } }] }\n}",
+          "description": "Notion's own property shape. Copy one from their docs and edit it."
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "https://api.notion.com/v1/pages",
+        "json": {
+          "parent": {
+            "database_id": "{{ databaseId }}"
+          },
+          "properties": "{{ properties }}"
+        }
+      },
+      "output": {
+        "id": "id",
+        "url": "url"
+      },
+      "errorPath": "message"
+    },
+    {
+      "key": "newRow",
+      "label": "New Notion row",
+      "description": "Fires when a row is added to a database. One item per row.",
+      "params": [
+        {
+          "key": "databaseId",
+          "label": "Database id",
+          "type": "text"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "https://api.notion.com/v1/databases/{{ databaseId }}/query",
+        "json": {
+          "page_size": 25,
+          "sorts": [
+            {
+              "timestamp": "created_time",
+              "direction": "descending"
+            }
+          ]
+        }
+      },
+      "itemsPath": "results",
+      "errorPath": "message",
+      "trigger": {
+        "dedupeBy": "id"
+      }
+    }
+  ]
+}

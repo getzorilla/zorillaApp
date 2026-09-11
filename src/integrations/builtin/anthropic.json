@@ -1,0 +1,82 @@
+{
+  "id": "anthropic",
+  "label": "Claude",
+  "category": "action",
+  "description": "Anthropic's models.",
+  "docs": "https://console.anthropic.com/settings/keys",
+  "credential": {
+    "fields": [
+      {
+        "key": "apiKey",
+        "label": "API key",
+        "secret": true,
+        "required": true,
+        "placeholder": "sk-ant-…"
+      }
+    ],
+    "auth": {
+      "headers": {
+        "x-api-key": "{{ apiKey }}",
+        "anthropic-version": "2023-06-01"
+      }
+    },
+    "test": {
+      "method": "GET",
+      "url": "https://api.anthropic.com/v1/models"
+    }
+  },
+  "actions": [
+    {
+      "key": "ask",
+      "label": "Ask Claude",
+      "params": [
+        {
+          "key": "prompt",
+          "label": "Prompt",
+          "type": "textarea",
+          "description": "Put {{ $json.field }} in here to feed it whatever the previous step produced."
+        },
+        {
+          "key": "model",
+          "label": "Model",
+          "type": "text",
+          "default": "claude-sonnet-5",
+          "description": "Claude-opus-5, claude-sonnet-5, claude-haiku-4-5-20251001, claude-fable-5-1"
+        },
+        {
+          "key": "system",
+          "label": "Instructions",
+          "type": "textarea",
+          "description": "Optional. How it should behave."
+        },
+        {
+          "key": "maxTokens",
+          "label": "Longest reply",
+          "type": "number",
+          "default": 1024
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "json": {
+          "model": "{{ model }}",
+          "max_tokens": "{{ maxTokens }}",
+          "system": "{{ system }}",
+          "messages": [
+            {
+              "role": "user",
+              "content": "{{ prompt }}"
+            }
+          ]
+        }
+      },
+      "output": {
+        "text": "content.0.text",
+        "model": "model",
+        "stopReason": "stop_reason"
+      },
+      "errorPath": "error.message"
+    }
+  ]
+}

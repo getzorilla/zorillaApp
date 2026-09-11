@@ -1,0 +1,110 @@
+{
+  "id": "hackernews",
+  "label": "Hacker News",
+  "category": "action",
+  "description": "Stories about anything you name. Needs no key.",
+  "docs": "https://hn.algolia.com/api",
+  "actions": [
+    {
+      "key": "search",
+      "label": "Search Hacker News",
+      "description": "Newest stories matching a word or phrase. One item per story.",
+      "params": [
+        {
+          "key": "query",
+          "label": "About",
+          "type": "text",
+          "default": "ethereum",
+          "description": "What the story should be about. Robinhood Chain, base, stablecoins."
+        },
+        {
+          "key": "tags",
+          "label": "Kind",
+          "type": "select",
+          "default": "story",
+          "options": [
+            { "value": "story", "label": "Stories" },
+            { "value": "front_page", "label": "Front page only" },
+            { "value": "show_hn", "label": "Show HN" },
+            { "value": "ask_hn", "label": "Ask HN" }
+          ]
+        },
+        {
+          "key": "minPoints",
+          "label": "At least this many points",
+          "type": "number",
+          "default": 0
+        },
+        {
+          "key": "limit",
+          "label": "How many",
+          "type": "number",
+          "default": 20
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "https://hn.algolia.com/api/v1/search_by_date",
+        "query": {
+          "query": "{{ query }}",
+          "tags": "{{ tags }}",
+          "hitsPerPage": "{{ limit }}",
+          "numericFilters": "points>={{ minPoints }}"
+        }
+      },
+      "itemsPath": "hits",
+      "output": {
+        "id": "objectID",
+        "title": "title",
+        "url": "url",
+        "points": "points",
+        "comments": "num_comments",
+        "author": "author",
+        "at": "created_at"
+      }
+    },
+    {
+      "key": "newStory",
+      "label": "New Hacker News story",
+      "description": "Fires when a story about your subject appears. Says nothing about the ones it has already mentioned.",
+      "params": [
+        {
+          "key": "query",
+          "label": "About",
+          "type": "text",
+          "default": "ethereum",
+          "description": "What the story should be about. Robinhood Chain, base, stablecoins."
+        },
+        {
+          "key": "minPoints",
+          "label": "At least this many points",
+          "type": "number",
+          "default": 0
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "https://hn.algolia.com/api/v1/search_by_date",
+        "query": {
+          "query": "{{ query }}",
+          "tags": "story",
+          "hitsPerPage": "50",
+          "numericFilters": "points>={{ minPoints }}"
+        }
+      },
+      "itemsPath": "hits",
+      "output": {
+        "id": "objectID",
+        "title": "title",
+        "url": "url",
+        "points": "points",
+        "comments": "num_comments",
+        "author": "author",
+        "at": "created_at"
+      },
+      "trigger": {
+        "dedupeBy": "id"
+      }
+    }
+  ]
+}

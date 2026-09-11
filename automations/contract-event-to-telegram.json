@@ -1,0 +1,102 @@
+{
+  "name": "demo04: Contract Event to Telegram",
+  "folder": "Examples",
+  "notes": "Watches a contract for an event, has Claude say what it means in one line, and sends it to Telegram. Needs a Claude key named claude_key and a Telegram key named telegram_key.",
+  "active": false,
+  "nodes": [
+    {
+      "id": "clock",
+      "type": "core.schedule",
+      "params": {
+        "mode": "every",
+        "every": 5,
+        "unit": "minutes"
+      },
+      "position": {
+        "x": 40,
+        "y": 170
+      }
+    },
+    {
+      "id": "events",
+      "type": "web3.logs",
+      "params": {
+        "chain": "ethereum",
+        "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "event": "event Transfer(address indexed from, address indexed to, uint256 value)",
+        "match": [],
+        "blocks": 30,
+        "rpc": ""
+      },
+      "position": {
+        "x": 310,
+        "y": 170
+      }
+    },
+    {
+      "id": "fresh",
+      "type": "logic.once",
+      "params": {
+        "key": "{{ $json.transactionHash }}"
+      },
+      "position": {
+        "x": 580,
+        "y": 170
+      }
+    },
+    {
+      "id": "explain",
+      "type": "anthropic.ask",
+      "params": {
+        "credential": "claude_key",
+        "model": "claude-sonnet-5",
+        "maxTokens": 200,
+        "system": "You write one line for a developer channel. No preamble, no hedging, no emoji.",
+        "prompt": "This event fired on our contract. Say what happened in one line, in plain words, and keep the numbers exact.\n\n{{ JSON.stringify($json.args) }}"
+      },
+      "position": {
+        "x": 850,
+        "y": 170
+      }
+    },
+    {
+      "id": "tell",
+      "type": "telegram.send",
+      "params": {
+        "credential": "telegram_key",
+        "chatId": "",
+        "text": "{{ $json.text }}"
+      },
+      "position": {
+        "x": 1120,
+        "y": 170
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "clock",
+      "fromPort": "main",
+      "to": "events",
+      "toPort": "main"
+    },
+    {
+      "from": "events",
+      "fromPort": "main",
+      "to": "fresh",
+      "toPort": "main"
+    },
+    {
+      "from": "fresh",
+      "fromPort": "main",
+      "to": "explain",
+      "toPort": "main"
+    },
+    {
+      "from": "explain",
+      "fromPort": "main",
+      "to": "tell",
+      "toPort": "main"
+    }
+  ]
+}

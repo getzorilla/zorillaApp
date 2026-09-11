@@ -1,0 +1,61 @@
+{
+  "name": "demo06: Payment to Slack and Notion",
+  "folder": "Examples",
+  "notes": "Turns each new Stripe payment into a Slack message and a Notion row. Needs keys named stripe_key, slack_key and notion_key.",
+  "active": false,
+  "nodes": [
+    {
+      "id": "paid",
+      "type": "stripe.newCharge",
+      "params": {
+        "credential": "stripe_key",
+        "every": 5,
+        "unit": "minutes"
+      },
+      "position": {
+        "x": 40,
+        "y": 170
+      }
+    },
+    {
+      "id": "slack",
+      "type": "slack.post",
+      "params": {
+        "credential": "slack_key",
+        "channel": "#sales",
+        "text": "${{ ($json.amount / 100).toFixed(2) }} from {{ $json.billing_details.email }}"
+      },
+      "position": {
+        "x": 300,
+        "y": 170
+      }
+    },
+    {
+      "id": "notion",
+      "type": "notion.createPage",
+      "params": {
+        "credential": "notion_key",
+        "databaseId": "put-your-database-id-here",
+        "properties": "{\"Name\":{\"title\":[{\"text\":{\"content\":\"{{ $json.id }}\"}}]}}"
+      },
+      "position": {
+        "x": 300,
+        "y": 320
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "paid",
+      "fromPort": "main",
+      "to": "slack",
+      "toPort": "main"
+    },
+    {
+      "from": "paid",
+      "fromPort": "main",
+      "to": "notion",
+      "toPort": "main"
+    }
+  ]
+}

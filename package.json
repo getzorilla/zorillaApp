@@ -1,0 +1,48 @@
+{
+  "name": "zorilla",
+  "version": "0.1.1",
+  "private": false,
+  "type": "module",
+  "license": "Elastic-2.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server/index.js",
+    "test": "node --test",
+    "tunnel": "node scripts/tunnel.mjs",
+    "docs": "node scripts/build-docs.mjs"
+  },
+  "dependencies": {
+    "nodemailer": "^10.0.1",
+    "viem": "^2.56.3"
+  },
+  "bin": {
+    "zorilla": "bin/zorilla.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "public",
+    "automations",
+    "docs",
+    "DOCS.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "description": "Automations that run on your machine. Local, source-available, reads Ethereum.",
+  "homepage": "https://zorilla.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/getzorilla/zorillaApp.git"
+  },
+  "keywords": [
+    "automation",
+    "workflow",
+    "local-first",
+    "ethereum",
+    "web3",
+    "self-hosted",
+    "n8n-alternative"
+  ]
+}

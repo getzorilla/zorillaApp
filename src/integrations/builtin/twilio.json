@@ -1,0 +1,79 @@
+{
+  "id": "twilio",
+  "label": "Twilio",
+  "category": "action",
+  "description": "Text messages.",
+  "docs": "https://console.twilio.com",
+  "credential": {
+    "description": "The Account SID and Auth Token are both on the Twilio console home page.",
+    "fields": [
+      {
+        "key": "accountSid",
+        "label": "Account SID",
+        "required": true,
+        "placeholder": "AC\u2026"
+      },
+      {
+        "key": "authToken",
+        "label": "Auth token",
+        "secret": true,
+        "required": true
+      },
+      {
+        "key": "fromNumber",
+        "label": "Your Twilio number",
+        "required": true,
+        "placeholder": "+15551234567"
+      }
+    ],
+    "auth": {
+      "basic": {
+        "user": "{{ accountSid }}",
+        "pass": "{{ authToken }}"
+      }
+    },
+    "test": {
+      "method": "GET",
+      "url": "https://api.twilio.com/2010-04-01/Accounts/{{ accountSid }}.json"
+    }
+  },
+  "actions": [
+    {
+      "key": "sendSms",
+      "label": "Send a text",
+      "description": "Sends one text message per item.",
+      "params": [
+        {
+          "key": "to",
+          "label": "To",
+          "type": "text",
+          "placeholder": "+15551234567",
+          "description": "Include the country code. Trial accounts can only text verified numbers."
+        },
+        {
+          "key": "body",
+          "label": "Message",
+          "type": "textarea"
+        }
+      ],
+      "fallbacks": {
+        "from": "{{ key.fromNumber }}"
+      },
+      "request": {
+        "method": "POST",
+        "url": "https://api.twilio.com/2010-04-01/Accounts/{{ key.accountSid }}/Messages.json",
+        "form": {
+          "To": "{{ to }}",
+          "From": "{{ key.fromNumber }}",
+          "Body": "{{ body }}"
+        }
+      },
+      "output": {
+        "sid": "sid",
+        "status": "status",
+        "to": "to"
+      },
+      "errorPath": "message"
+    }
+  ]
+}

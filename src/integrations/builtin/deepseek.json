@@ -1,0 +1,66 @@
+{
+  "id": "deepseek",
+  "label": "DeepSeek",
+  "category": "action",
+  "description": "DeepSeek's models.",
+  "docs": "https://platform.deepseek.com/api_keys",
+  "credential": {
+    "fields": [
+      {
+        "key": "apiKey",
+        "label": "API key",
+        "secret": true,
+        "required": true,
+        "placeholder": "sk-…"
+      }
+    ],
+    "auth": {
+      "headers": {
+        "Authorization": "Bearer {{ apiKey }}"
+      }
+    },
+    "test": {
+      "method": "GET",
+      "url": "https://api.deepseek.com/models"
+    }
+  },
+  "actions": [
+    {
+      "key": "ask",
+      "label": "Ask DeepSeek",
+      "params": [
+        {
+          "key": "prompt",
+          "label": "Prompt",
+          "type": "textarea",
+          "description": "Put {{ $json.field }} in here to feed it whatever the previous step produced."
+        },
+        {
+          "key": "model",
+          "label": "Model",
+          "type": "text",
+          "default": "deepseek-chat",
+          "description": "Deepseek-chat, deepseek-reasoner"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "https://api.deepseek.com/chat/completions",
+        "json": {
+          "model": "{{ model }}",
+          "messages": [
+            {
+              "role": "user",
+              "content": "{{ prompt }}"
+            }
+          ]
+        }
+      },
+      "output": {
+        "text": "choices.0.message.content",
+        "model": "model"
+      },
+      "errorPath": "error.message"
+    }
+  ]
+}

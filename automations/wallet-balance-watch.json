@@ -1,0 +1,77 @@
+{
+  "name": "demo09: Wallet Balance Watch",
+  "folder": "Examples",
+  "notes": "Watches a wallet and says so when its balance drops below a figure you set. Needs no keys.",
+  "active": false,
+  "nodes": [
+    {
+      "id": "clock",
+      "type": "core.schedule",
+      "params": {
+        "mode": "every",
+        "every": 1,
+        "unit": "hours"
+      },
+      "position": {
+        "x": 40,
+        "y": 170
+      }
+    },
+    {
+      "id": "bal",
+      "type": "web3.balance",
+      "params": {
+        "chain": "ethereum",
+        "address": "vitalik.eth"
+      },
+      "position": {
+        "x": 300,
+        "y": 170
+      }
+    },
+    {
+      "id": "low",
+      "type": "logic.if",
+      "params": {
+        "value": "{{ Number($json.eth) }}",
+        "operation": "less",
+        "compare": "100"
+      },
+      "position": {
+        "x": 560,
+        "y": 170
+      }
+    },
+    {
+      "id": "note",
+      "type": "output.log",
+      "params": {
+        "message": "Balance is {{ $json.eth }} ETH \u2014 below the line"
+      },
+      "position": {
+        "x": 820,
+        "y": 170
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "clock",
+      "fromPort": "main",
+      "to": "bal",
+      "toPort": "main"
+    },
+    {
+      "from": "bal",
+      "fromPort": "main",
+      "to": "low",
+      "toPort": "main"
+    },
+    {
+      "from": "low",
+      "fromPort": "true",
+      "to": "note",
+      "toPort": "main"
+    }
+  ]
+}

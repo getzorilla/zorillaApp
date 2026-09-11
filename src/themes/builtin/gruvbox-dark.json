@@ -1,0 +1,24 @@
+{
+  "id": "gruvbox-dark",
+  "label": "Gruvbox Dark",
+  "appearance": "dark",
+  "author": "Pavel Pertsev",
+  "colors": {
+    "bg": "#282828",
+    "raise": "#32302F",
+    "sunk": "#1D2021",
+    "line": "#3C3836",
+    "text": "#EBDBB2",
+    "dim": "#A89984",
+    "dimmer": "#7C6F64",
+    "accent": "#83A598",
+    "onAccent": "#1D2021",
+    "ok": "#B8BB26",
+    "warn": "#FABD2F",
+    "bad": "#FB4934",
+    "skip": "#504945",
+    "grid": "#32302F",
+    "wire": "#504945",
+    "wireHot": "#FE8019"
+  }
+}

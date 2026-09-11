@@ -1,0 +1,89 @@
+{
+  "id": "etherscan",
+  "label": "Etherscan",
+  "category": "web3",
+  "description": "Transaction history, which a node cannot give you.",
+  "docs": "https://etherscan.io/myapikey",
+  "credential": {
+    "fields": [
+      {
+        "key": "apiKey",
+        "label": "API key",
+        "secret": true,
+        "required": true
+      }
+    ],
+    "auth": {
+      "query": {
+        "apikey": "{{ apiKey }}"
+      }
+    },
+    "test": {
+      "method": "GET",
+      "url": "https://api.etherscan.io/v2/api?chainid=1&module=stats&action=ethsupply"
+    }
+  },
+  "actions": [
+    {
+      "key": "transactions",
+      "label": "Wallet transactions",
+      "description": "One item per transaction, newest first.",
+      "params": [
+        {
+          "key": "address",
+          "label": "Wallet address",
+          "type": "text"
+        },
+        {
+          "key": "chainId",
+          "label": "Network",
+          "type": "select",
+          "default": "1",
+          "options": [
+            {
+              "value": "1",
+              "label": "Ethereum"
+            },
+            {
+              "value": "11155111",
+              "label": "Sepolia"
+            }
+          ]
+        },
+        {
+          "key": "limit",
+          "label": "How many at most",
+          "type": "number",
+          "default": 100,
+          "min": 1,
+          "description": "Zorilla keeps asking for more pages until it has this many, and says in the log whether any were left behind."
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "https://api.etherscan.io/v2/api",
+        "query": {
+          "chainid": "{{ chainId }}",
+          "module": "account",
+          "action": "txlist",
+          "address": "{{ address }}",
+          "sort": "desc"
+        }
+      },
+      "itemsPath": "result",
+      "errorPath": "message",
+      "pagination": {
+        "size": 100,
+        "sizeInto": {
+          "query": "offset"
+        },
+        "next": {
+          "page": true
+        },
+        "into": {
+          "query": "page"
+        }
+      }
+    }
+  ]
+}

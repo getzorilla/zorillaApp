@@ -1,0 +1,38 @@
+{
+  "id": "coingecko",
+  "label": "CoinGecko",
+  "category": "action",
+  "description": "Coin prices. Needs no key.",
+  "docs": "https://www.coingecko.com/en/api",
+  "actions": [
+    {
+      "key": "price",
+      "label": "Coin price",
+      "description": "Current price of one or more coins.",
+      "params": [
+        {
+          "key": "ids",
+          "label": "Coins",
+          "type": "text",
+          "default": "ethereum",
+          "description": "CoinGecko ids, comma separated. ethereum, bitcoin, solana."
+        },
+        {
+          "key": "currency",
+          "label": "In",
+          "type": "text",
+          "default": "usd"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "https://api.coingecko.com/api/v3/simple/price",
+        "query": {
+          "ids": "{{ ids }}",
+          "vs_currencies": "{{ currency }}"
+        }
+      },
+      "errorPath": "error"
+    }
+  ]
+}

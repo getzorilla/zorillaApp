@@ -1,0 +1,110 @@
+{
+  "id": "supabase",
+  "label": "Supabase",
+  "category": "action",
+  "description": "Read and write rows in your database.",
+  "docs": "https://supabase.com/dashboard/project/_/settings/api",
+  "credential": {
+    "description": "Project URL and the service role key, both under Project Settings, API.",
+    "fields": [
+      {
+        "key": "url",
+        "label": "Project URL",
+        "required": true,
+        "placeholder": "https://abcdefgh.supabase.co"
+      },
+      {
+        "key": "serviceKey",
+        "label": "Service role key",
+        "secret": true,
+        "required": true
+      }
+    ],
+    "auth": {
+      "headers": {
+        "apikey": "{{ serviceKey }}",
+        "Authorization": "Bearer {{ serviceKey }}"
+      }
+    },
+    "test": {
+      "method": "GET",
+      "url": "{{ url }}/rest/v1/"
+    }
+  },
+  "actions": [
+    {
+      "key": "select",
+      "label": "Read rows (Supabase)",
+      "description": "One item per row.",
+      "params": [
+        {
+          "key": "table",
+          "label": "Table",
+          "type": "text"
+        },
+        {
+          "key": "columns",
+          "label": "Columns",
+          "type": "text",
+          "default": "*"
+        },
+        {
+          "key": "limit",
+          "label": "How many at most",
+          "type": "number",
+          "default": 100,
+          "min": 1,
+          "description": "Zorilla keeps asking for more pages until it has this many, and says in the log whether any were left behind."
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{ key.url }}/rest/v1/{{ table }}",
+        "query": {
+          "select": "{{ columns }}"
+        }
+      },
+      "itemsPath": "$",
+      "errorPath": "message",
+      "pagination": {
+        "size": 100,
+        "sizeInto": {
+          "query": "limit"
+        },
+        "next": {
+          "count": true
+        },
+        "into": {
+          "query": "offset"
+        }
+      }
+    },
+    {
+      "key": "insert",
+      "label": "Add a row (Supabase)",
+      "params": [
+        {
+          "key": "table",
+          "label": "Table",
+          "type": "text"
+        },
+        {
+          "key": "row",
+          "label": "Fields",
+          "type": "keyvalue",
+          "default": []
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{ key.url }}/rest/v1/{{ table }}",
+        "headers": {
+          "Prefer": "return=representation"
+        },
+        "jsonFrom": "row"
+      },
+      "itemsPath": "$",
+      "errorPath": "message"
+    }
+  ]
+}

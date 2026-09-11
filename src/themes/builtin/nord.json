@@ -1,0 +1,24 @@
+{
+  "id": "nord",
+  "label": "Nord",
+  "appearance": "dark",
+  "author": "Arctic Ice Studio \u2014 nordtheme.com",
+  "colors": {
+    "bg": "#2E3440",
+    "raise": "#3B4252",
+    "sunk": "#272B35",
+    "line": "#434C5E",
+    "text": "#E5E9F0",
+    "dim": "#9BA6B8",
+    "dimmer": "#6C7789",
+    "accent": "#88C0D0",
+    "onAccent": "#22282F",
+    "ok": "#A3BE8C",
+    "warn": "#EBCB8B",
+    "bad": "#BF616A",
+    "skip": "#4C566A",
+    "grid": "#3A414F",
+    "wire": "#4C566A",
+    "wireHot": "#88C0D0"
+  }
+}

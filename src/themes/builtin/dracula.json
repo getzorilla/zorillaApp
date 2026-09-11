@@ -1,0 +1,24 @@
+{
+  "id": "dracula",
+  "label": "Dracula",
+  "appearance": "dark",
+  "author": "Dracula Theme \u2014 draculatheme.com",
+  "colors": {
+    "bg": "#282A36",
+    "raise": "#21222C",
+    "sunk": "#191A21",
+    "line": "#44475A",
+    "text": "#F8F8F2",
+    "dim": "#8B95B8",
+    "dimmer": "#6272A4",
+    "accent": "#BD93F9",
+    "onAccent": "#1B1C24",
+    "ok": "#50FA7B",
+    "warn": "#F1FA8C",
+    "bad": "#FF5555",
+    "skip": "#44475A",
+    "grid": "#343746",
+    "wire": "#44475A",
+    "wireHot": "#FF79C6"
+  }
+}

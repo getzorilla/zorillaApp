@@ -1,0 +1,66 @@
+{
+  "id": "slack",
+  "label": "Slack",
+  "category": "action",
+  "description": "Post into a channel.",
+  "docs": "https://api.slack.com/apps",
+  "credential": {
+    "description": "A bot token, starting xoxb-. The bot has to be invited to the channel it posts in.",
+    "fields": [
+      {
+        "key": "botToken",
+        "label": "Bot token",
+        "secret": true,
+        "required": true,
+        "placeholder": "xoxb-\u2026"
+      }
+    ],
+    "auth": {
+      "headers": {
+        "Authorization": "Bearer {{ botToken }}"
+      }
+    },
+    "test": {
+      "method": "GET",
+      "url": "https://slack.com/api/auth.test"
+    },
+    "identity": {
+      "workspace": "team",
+      "as": "user"
+    }
+  },
+  "actions": [
+    {
+      "key": "post",
+      "label": "Post to Slack",
+      "description": "Posts one message per item.",
+      "params": [
+        {
+          "key": "channel",
+          "label": "Channel",
+          "type": "text",
+          "placeholder": "#alerts or a channel ID"
+        },
+        {
+          "key": "text",
+          "label": "Message",
+          "type": "textarea"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "https://slack.com/api/chat.postMessage",
+        "json": {
+          "channel": "{{ channel }}",
+          "text": "{{ text }}"
+        }
+      },
+      "okPath": "ok",
+      "output": {
+        "ts": "ts",
+        "channel": "channel"
+      },
+      "errorPath": "error"
+    }
+  ]
+}

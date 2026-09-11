@@ -1,0 +1,84 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    # Zorilla runs on somebody else's machine, so "it works here" is not
+    # evidence. Every push runs the suite on all three, and starts the server on
+    # each to catch the things a unit test cannot: paths, file modes, and the
+    # launcher's per-platform browser command.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: [20, 22]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm ci
+      # the suite runs the examples against the real step definitions, so a
+      # renamed field or a missing step fails here rather than on somebody's
+      # first evening with it
+      - run: npm test
+
+      - name: it starts, serves, and its data directory works
+        shell: bash
+        run: |
+          export ZORILLA_HOME="$RUNNER_TEMP/zorilla-home"
+          export ZORILLA_PORT=5177
+          export ZORILLA_NO_OPEN=1
+          node bin/zorilla.js &
+          for i in $(seq 1 60); do
+            curl -sf "http://127.0.0.1:5177/api/state" >/dev/null && break
+            sleep 1
+          done
+          curl -sf "http://127.0.0.1:5177/api/state" > state.json
+          node -e "
+            const s = JSON.parse(require('fs').readFileSync('state.json', 'utf8'))
+            if (!s.nodes.length) throw new Error('no functions loaded')
+            if (s.problems.length) throw new Error('problems on a clean start: ' + JSON.stringify(s.problems))
+            console.log('started with', s.nodes.length, 'functions and', s.integrations.length, 'integrations')
+          "
+          # the vault writes an encrypted file and reads it back on this filesystem
+          curl -sf -X PUT "http://127.0.0.1:5177/api/credentials/ci_key" \
+            -H 'content-type: application/json' \
+            -d '{"type":"bearer","values":{"token":"ci-token-value"},"points":"ci"}' >/dev/null
+          curl -sf "http://127.0.0.1:5177/api/credentials" | node -e "
+            let d = ''
+            process.stdin.on('data', (c) => (d += c)).on('end', () => {
+              const names = JSON.parse(d).map((c) => c.name)
+              if (!names.includes('ci_key')) throw new Error('the vault did not keep the key')
+              if (d.includes('ci-token-value')) throw new Error('a key value left the vault')
+              console.log('vault round trip fine')
+            })
+          "
+          # and an automation with no keys actually runs
+          ID=$(curl -sf -X POST "http://127.0.0.1:5177/api/workflows" \
+            -H 'content-type: application/json' \
+            -d '{"name":"ci","nodes":[{"id":"t","type":"core.manual","params":{},"position":{"x":0,"y":0}},{"id":"l","type":"output.log","params":{"message":"ran on {{ $now.getFullYear() }}"},"position":{"x":240,"y":0}}],"edges":[{"from":"t","fromPort":"main","to":"l","toPort":"main"}]}' \
+            | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).id))")
+          curl -sf -X POST "http://127.0.0.1:5177/api/workflows/$ID/run" \
+            -H 'content-type: application/json' -d '{}' | node -e "
+              let d = ''
+              process.stdin.on('data', (c) => (d += c)).on('end', () => {
+                const run = JSON.parse(d)
+                if (run.status !== 'ok') throw new Error('a keyless run failed: ' + JSON.stringify(run))
+                console.log('ran clean:', run.nodes.l.logs[0].message)
+              })
+            "
+
+      - name: DOCS.md is in step with the code
+        shell: bash
+        run: |
+          npm run docs
+          git diff --exit-code -- DOCS.md || {
+            echo "DOCS.md is stale. Run npm run docs and commit it."
+            exit 1
+          }

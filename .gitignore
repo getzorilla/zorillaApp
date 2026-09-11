@@ -1,0 +1,25 @@
+node_modules/
+.DS_Store
+*.log
+
+# Agent and spec files. DOCS.md is the exception: it is the reference an agent
+# reads to write an automation, so it ships with the app.
+*.md
+!README.md
+!DOCS.md
+!automations/README.md
+!docs/SIGNING.md
+!docs/integration-prompt.md
+
+.claude/
+.cursor/
+.cursorrules
+.vscode/
+.idea/
+
+# never
+.env
+.env.*
+*.pem
+*.key
+vault.json

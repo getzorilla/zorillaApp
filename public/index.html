@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zorilla</title>
+  <link rel="icon" href="/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="bar">
+    <button id="go-home" class="mark" title="Workspace">
+      <img src="/logo.svg" alt="Zorilla" width="20" height="20">
+    </button>
+    <span class="nav-arrows">
+      <button id="go-back" class="arrow" title="Back" aria-label="Back">‹</button>
+      <button id="go-forward" class="arrow" title="Forward" aria-label="Forward">›</button>
+    </span>
+    <span class="sep">/</span>
+    <button id="workspace-name" class="crumb" title="Rename workspace"></button>
+    <span class="sep" id="crumb-sep" hidden>/</span>
+    <button id="automation-name" class="crumb" hidden title="Rename automation"></button>
+
+    <span class="spacer"></span>
+    <button id="palette-open" class="finder" title="Go to anything (⌘K)">
+      <span>Go to anything</span><kbd>⌘K</kbd>
+    </button>
+    <span class="spacer"></span>
+    <span id="save-state" class="hint"></span>
+    <span id="editor-controls" hidden>
+      <button id="active" class="switch" type="button" aria-pressed="false"
+        title="Switched on, this runs by itself when its trigger fires. Switched off, it only runs when you press run.">
+        <span class="pip"></span><span id="active-label">Not live</span>
+      </button>
+      <button id="save-as" class="ghost">Save as</button>
+      <button id="show-json" class="ghost" title="See this automation as JSON">JSON</button>
+      <button id="share" class="ghost" title="Save this to a file you can send to somebody">Share</button>
+      <button id="run" class="primary">Run</button>
+    </span>
+  </header>
+
+  <main id="home-view">
+    <nav class="rail">
+      <button class="rail-item active" data-panel="automations"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="3.5" cy="4" r="2"/><circle cx="12.5" cy="11.5" r="2"/><path d="M5.5 4h5a2 2 0 0 1 2 2v3.5"/></svg><span>Workspace</span></button>
+      <button class="rail-item" data-panel="keys"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.5" cy="10.5" r="3"/><path d="m7.8 8.4 5.4-5.4M11.2 5 12.8 6.6M9.7 6.5l1.6 1.6"/></svg><span>Keys</span></button>
+      <button class="rail-item" data-panel="integrations"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1.4"/><rect x="9" y="2" width="5" height="5" rx="1.4"/><rect x="2" y="9" width="5" height="5" rx="1.4"/><path d="M9 11.5h5M11.5 9v5"/></svg><span>Integrations</span></button>
+      <button class="rail-item" data-panel="settings"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.6 8h1.8M11.25 4.75l1.28-1.28M8 3.4V1.6M4.75 4.75 3.47 3.47M3.4 8H1.6M4.75 11.25l-1.28 1.28M8 12.6v1.8M11.25 11.25l1.28 1.28" stroke-width="2.4"/><circle cx="8" cy="8" r="4.9"/><circle cx="8" cy="8" r="1.9"/></svg><span>Settings</span></button>
+      <button class="rail-item" data-panel="guide"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.3"/><path d="M6.2 6.1a1.9 1.9 0 1 1 2.5 1.8c-.5.2-.7.6-.7 1.1v.3"/><path d="M8 11.6h.01"/></svg><span>Guide</span></button>
+      <div class="rail-foot">
+        <button class="rail-cta" id="open-editor">Open Editor</button>
+        <div class="hint" id="home-meta"></div>
+      </div>
+    </nav>
+    <section class="side" id="home-side"></section>
+    <section class="sheet" id="home-sheet"></section>
+  </main>
+
+  <main id="editor-view" hidden>
+    <button class="purpose" id="purpose" title="Say what this automation is for"></button>
+
+    <aside class="palette">
+      <div class="tabs">
+        <button class="tab active" data-tab="steps">Functions</button>
+        <button class="tab" data-tab="keys">Keys</button>
+        <button class="pane-fold" id="fold-palette" title="Hide this panel">‹</button>
+      </div>
+      <div id="tab-steps">
+        <input id="palette-search" type="search" placeholder="Search functions" spellcheck="false">
+        <div id="palette"></div>
+        <div id="palette-problems" class="problems"></div>
+      </div>
+      <div id="tab-keys" hidden></div>
+    </aside>
+
+    <div class="pane-grip" id="grip-palette" title="Drag to resize"></div>
+
+    <section class="canvas" id="canvas">
+      <svg id="wires"><g id="wire-layer"></g></svg>
+      <div id="world" class="world"></div>
+      <div id="empty-hint" class="empty-hint">
+        <div>
+          <p>Drag a function in from the left</p>
+          <button id="agent-build" class="ghost">Or have an agent build it</button>
+        </div>
+      </div>
+      <button class="pane-show" id="show-palette" title="Show functions" hidden>›</button>
+      <button class="pane-show right" id="show-inspector" title="Show the panel" hidden>‹</button>
+    </section>
+
+    <div class="pane-grip" id="grip-inspector" title="Drag to resize"></div>
+
+    <aside class="inspector">
+      <div class="inspector-head">
+        <div class="panel-title" id="inspector-title">Nothing selected</div>
+        <button class="pane-fold" id="fold-inspector" title="Hide this panel">›</button>
+      </div>
+      <div id="inspector"></div>
+    </aside>
+
+    <section class="drawer" id="drawer">
+      <div class="drawer-bar">
+        <button id="drawer-toggle" class="ghost drawer-chevron" title="Open the run log (⌘J)"><span class="chev">›</span> Run log</button>
+        <span id="run-summary" class="hint"></span>
+        <span class="spacer"></span>
+        <select id="run-picker" title="Past runs"></select>
+      </div>
+      <div id="run-body" class="run-body"></div>
+    </section>
+  </main>
+
+  <div id="sheet-over" class="sheet-over" hidden>
+    <div class="sheet-over-card">
+      <div class="sheet-over-head">
+        <div class="panel-title" id="sheet-over-title"></div>
+        <span class="spacer"></span>
+        <button id="sheet-over-close" class="ghost">Close</button>
+      </div>
+      <div id="sheet-over-body"></div>
+    </div>
+  </div>
+
+  <div id="finder" class="finder-over" hidden>
+    <div class="finder-card">
+      <input id="finder-input" type="search" placeholder="Go to an automation, a panel, a key, a workspace…" spellcheck="false" autocomplete="off">
+      <div id="finder-results" class="finder-results"></div>
+    </div>
+  </div>
+
+  <div id="guide" class="guide" hidden>
+    <div class="guide-card">
+      <div class="guide-shot"><img id="guide-img" alt=""></div>
+      <div class="guide-text">
+        <div class="guide-step" id="guide-step"></div>
+        <h2 id="guide-title"></h2>
+        <p id="guide-body"></p>
+      </div>
+      <div class="guide-foot">
+        <label class="guide-again"><input type="checkbox" id="guide-again"> <span>Don't show this again</span></label>
+        <span class="spacer"></span>
+        <div class="guide-dots" id="guide-dots"></div>
+        <span class="spacer"></span>
+        <button id="guide-back" class="ghost">Back</button>
+        <button id="guide-next" class="primary">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <div id="crashed" class="crashed" hidden>
+    <div class="crashed-card">
+      <h2>Zorilla ran into an error.</h2>
+      <p>Your automations and keys are files on disk and are untouched. Reloading usually clears it.</p>
+      <pre id="crashed-detail"></pre>
+      <div class="row-inline">
+        <button id="crashed-reload" class="primary">Reload</button>
+        <button id="crashed-copy" class="ghost">Copy details</button>
+        <a id="crashed-report" class="ghost" href="https://x.com/4aykk" target="_blank" rel="noreferrer">Report it</a>
+        <button id="crashed-dismiss" class="ghost">Dismiss</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

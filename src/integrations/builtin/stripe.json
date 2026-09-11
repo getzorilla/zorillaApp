@@ -1,0 +1,121 @@
+{
+  "id": "stripe",
+  "label": "Stripe",
+  "category": "action",
+  "description": "Payments data.",
+  "docs": "https://dashboard.stripe.com/apikeys",
+  "credential": {
+    "fields": [
+      {
+        "key": "secretKey",
+        "label": "Secret key",
+        "secret": true,
+        "required": true,
+        "placeholder": "sk_live_… or sk_test_…"
+      }
+    ],
+    "auth": {
+      "headers": {
+        "Authorization": "Bearer {{ secretKey }}"
+      }
+    },
+    "test": {
+      "method": "GET",
+      "url": "https://api.stripe.com/v1/account"
+    },
+    "identity": {
+      "": "business_profile.name",
+      "account": "id"
+    }
+  },
+  "actions": [
+    {
+      "key": "charges",
+      "label": "Read Stripe payments",
+      "description": "One item per payment.",
+      "params": [
+        {
+          "key": "limit",
+          "label": "How many at most",
+          "type": "number",
+          "default": 100,
+          "min": 1,
+          "description": "Zorilla keeps asking for more pages until it has this many, and says in the log whether any were left behind."
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "https://api.stripe.com/v1/charges",
+        "query": {}
+      },
+      "itemsPath": "data",
+      "errorPath": "error.message",
+      "pagination": {
+        "size": 100,
+        "sizeInto": {
+          "query": "limit"
+        },
+        "next": {
+          "lastItem": "id"
+        },
+        "more": "has_more",
+        "into": {
+          "query": "starting_after"
+        }
+      }
+    },
+    {
+      "key": "customers",
+      "label": "Read Stripe customers",
+      "description": "One item per customer.",
+      "params": [
+        {
+          "key": "limit",
+          "label": "How many at most",
+          "type": "number",
+          "default": 100,
+          "min": 1,
+          "description": "Zorilla keeps asking for more pages until it has this many, and says in the log whether any were left behind."
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "https://api.stripe.com/v1/customers",
+        "query": {}
+      },
+      "itemsPath": "data",
+      "errorPath": "error.message",
+      "pagination": {
+        "size": 100,
+        "sizeInto": {
+          "query": "limit"
+        },
+        "next": {
+          "lastItem": "id"
+        },
+        "more": "has_more",
+        "into": {
+          "query": "starting_after"
+        }
+      }
+    },
+    {
+      "key": "newCharge",
+      "label": "New Stripe payment",
+      "description": "Fires when a payment goes through. One item per payment.",
+      "params": [],
+      "request": {
+        "method": "GET",
+        "url": "https://api.stripe.com/v1/charges",
+        "query": {
+          "limit": "25"
+        }
+      },
+      "itemsPath": "data",
+      "errorPath": "error.message",
+      "trigger": {
+        "dedupeBy": "id"
+      }
+    }
+  ]
+}

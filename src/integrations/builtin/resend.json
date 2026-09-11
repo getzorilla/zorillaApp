@@ -1,0 +1,89 @@
+{
+  "id": "resend",
+  "label": "Resend",
+  "category": "action",
+  "description": "Email built for automations.",
+  "docs": "https://resend.com/api-keys",
+  "credential": {
+    "description": "Create a key at resend.com/api-keys. Delivery needs a domain you have verified there: until you verify one, mail goes out from Resend's shared test sender and usually lands in Spam.",
+    "fields": [
+      {
+        "key": "apiKey",
+        "label": "API key",
+        "secret": true,
+        "required": true,
+        "placeholder": "re_…"
+      },
+      {
+        "key": "from",
+        "label": "Default sender",
+        "required": false,
+        "placeholder": "you@yourdomain.com",
+        "description": "Optional. Steps use this unless they set their own."
+      }
+    ],
+    "auth": {
+      "headers": {
+        "Authorization": "Bearer {{ apiKey }}"
+      }
+    },
+    "test": {
+      "method": "GET",
+      "url": "https://api.resend.com/domains"
+    }
+  },
+  "actions": [
+    {
+      "key": "send",
+      "label": "Send email",
+      "description": "Sends one email per item, with any files the item is carrying. Check Spam and All Mail for the first one.",
+      "params": [
+        {
+          "key": "to",
+          "label": "To",
+          "type": "text",
+          "placeholder": "someone@example.com"
+        },
+        {
+          "key": "subject",
+          "label": "Subject",
+          "type": "text"
+        },
+        {
+          "key": "html",
+          "label": "Message",
+          "type": "textarea"
+        },
+        {
+          "key": "from",
+          "label": "From",
+          "type": "text",
+          "description": "Leave blank to use the sender saved with the key."
+        }
+      ],
+      "fallbacks": {
+        "from": "{{ key.from }}"
+      },
+      "request": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "json": {
+          "from": "{{ from }}",
+          "to": "{{ to }}",
+          "subject": "{{ subject }}",
+          "html": "{{ html }}"
+        }
+      },
+      "output": {
+        "id": "id",
+        "to": "$"
+      },
+      "errorPath": "message",
+      "attachments": {
+        "into": "attachments",
+        "filenameKey": "filename",
+        "contentKey": "content"
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "paper",
+  "label": "Paper",
+  "appearance": "light",
+  "author": "zorilla",
+  "colors": {
+    "bg": "#FBFBFA",
+    "raise": "#F3F3F1",
+    "sunk": "#EDEDEA",
+    "line": "#DFDFDA",
+    "text": "#26262A",
+    "dim": "#6B6B72",
+    "dimmer": "#9B9BA2",
+    "accent": "#2F6BFF",
+    "onAccent": "#FFFFFF",
+    "ok": "#1E8E4A",
+    "warn": "#A76B00",
+    "bad": "#C4322B",
+    "skip": "#B8B8B2",
+    "grid": "#EDEDEA",
+    "wire": "#C3C3BC",
+    "wireHot": "#2F6BFF"
+  }
+}

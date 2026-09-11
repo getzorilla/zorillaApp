@@ -1,0 +1,56 @@
+{
+  "id": "discord",
+  "label": "Discord",
+  "category": "action",
+  "description": "Post through a channel webhook.",
+  "docs": "https://support.discord.com/hc/en-us/articles/228383668",
+  "credential": {
+    "description": "In Discord: Channel settings, Integrations, Webhooks, Copy Webhook URL. The URL is the secret.",
+    "fields": [
+      {
+        "key": "webhookUrl",
+        "label": "Webhook URL",
+        "secret": true,
+        "required": true,
+        "placeholder": "https://discord.com/api/webhooks/\u2026"
+      }
+    ],
+    "auth": {},
+    "test": {
+      "method": "GET",
+      "url": "{{ webhookUrl }}"
+    },
+    "identity": {
+      "webhook": "name",
+      "in channel": "channel_id"
+    }
+  },
+  "actions": [
+    {
+      "key": "post",
+      "label": "Post to Discord",
+      "params": [
+        {
+          "key": "content",
+          "label": "Message",
+          "type": "textarea"
+        },
+        {
+          "key": "username",
+          "label": "Show as",
+          "type": "text",
+          "description": "Optional. Overrides the webhook's name."
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{ key.webhookUrl }}",
+        "json": {
+          "content": "{{ content }}",
+          "username": "{{ username }}"
+        }
+      },
+      "errorPath": "message"
+    }
+  ]
+}

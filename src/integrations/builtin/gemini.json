@@ -1,0 +1,67 @@
+{
+  "id": "gemini",
+  "label": "Gemini",
+  "category": "action",
+  "description": "Google's models.",
+  "docs": "https://aistudio.google.com/apikey",
+  "credential": {
+    "fields": [
+      {
+        "key": "apiKey",
+        "label": "API key",
+        "secret": true,
+        "required": true,
+        "placeholder": "AIza…"
+      }
+    ],
+    "auth": {
+      "headers": {
+        "x-goog-api-key": "{{ apiKey }}"
+      }
+    },
+    "test": {
+      "method": "GET",
+      "url": "https://generativelanguage.googleapis.com/v1beta/models"
+    }
+  },
+  "actions": [
+    {
+      "key": "ask",
+      "label": "Ask Gemini",
+      "params": [
+        {
+          "key": "prompt",
+          "label": "Prompt",
+          "type": "textarea",
+          "description": "Put {{ $json.field }} in here to feed it whatever the previous step produced."
+        },
+        {
+          "key": "model",
+          "label": "Model",
+          "type": "text",
+          "default": "gemini-2.0-flash",
+          "description": "Gemini-2.0-flash, gemini-1.5-pro"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/{{ model }}:generateContent",
+        "json": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "{{ prompt }}"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": {
+        "text": "candidates.0.content.parts.0.text"
+      },
+      "errorPath": "error.message"
+    }
+  ]
+}

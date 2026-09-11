@@ -1,0 +1,24 @@
+{
+  "id": "tokyo-night",
+  "label": "Tokyo Night",
+  "appearance": "dark",
+  "author": "Enkia",
+  "colors": {
+    "bg": "#1A1B26",
+    "raise": "#1F2335",
+    "sunk": "#16161E",
+    "line": "#292E42",
+    "text": "#C0CAF5",
+    "dim": "#9AA5CE",
+    "dimmer": "#565F89",
+    "accent": "#7AA2F7",
+    "onAccent": "#10111A",
+    "ok": "#9ECE6A",
+    "warn": "#E0AF68",
+    "bad": "#F7768E",
+    "skip": "#3B4261",
+    "grid": "#24283B",
+    "wire": "#3B4261",
+    "wireHot": "#BB9AF7"
+  }
+}

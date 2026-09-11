@@ -1,0 +1,78 @@
+{
+  "name": "demo03: Telegram Post to Group",
+  "folder": "Examples",
+  "notes": "Puts new posts from one X account about a subject you choose into a Telegram group. Needs an X key named x_key and a Telegram key named telegram_key.",
+  "active": false,
+  "nodes": [
+    {
+      "id": "clock",
+      "type": "core.schedule",
+      "params": {
+        "mode": "every",
+        "every": 10,
+        "unit": "minutes"
+      },
+      "position": {
+        "x": 40,
+        "y": 170
+      }
+    },
+    {
+      "id": "posts",
+      "type": "x.search",
+      "params": {
+        "credential": "x_key",
+        "query": "from:VitalikButerin (rollup OR L2)",
+        "limit": 10
+      },
+      "position": {
+        "x": 310,
+        "y": 170
+      }
+    },
+    {
+      "id": "fresh",
+      "type": "logic.once",
+      "params": {
+        "key": "{{ $json.id }}"
+      },
+      "position": {
+        "x": 580,
+        "y": 170
+      }
+    },
+    {
+      "id": "tell",
+      "type": "telegram.send",
+      "params": {
+        "credential": "telegram_key",
+        "chatId": "",
+        "text": "New post:\n\n{{ $json.text }}"
+      },
+      "position": {
+        "x": 850,
+        "y": 170
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "clock",
+      "fromPort": "main",
+      "to": "posts",
+      "toPort": "main"
+    },
+    {
+      "from": "posts",
+      "fromPort": "main",
+      "to": "fresh",
+      "toPort": "main"
+    },
+    {
+      "from": "fresh",
+      "fromPort": "main",
+      "to": "tell",
+      "toPort": "main"
+    }
+  ]
+}

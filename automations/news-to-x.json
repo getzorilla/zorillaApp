@@ -1,0 +1,99 @@
+{
+  "name": "demo05: News to X",
+  "folder": "Examples",
+  "notes": "Finds new Hacker News stories about a subject you choose, has Claude draft a post, and puts it on X. Needs a Claude key named claude_key and an X key named x_key.",
+  "active": false,
+  "nodes": [
+    {
+      "id": "clock",
+      "type": "core.schedule",
+      "params": {
+        "mode": "every",
+        "every": 30,
+        "unit": "minutes"
+      },
+      "position": {
+        "x": 40,
+        "y": 170
+      }
+    },
+    {
+      "id": "news",
+      "type": "hackernews.search",
+      "params": {
+        "query": "Robinhood Chain",
+        "tags": "story",
+        "minPoints": 0,
+        "limit": 20
+      },
+      "position": {
+        "x": 310,
+        "y": 170
+      }
+    },
+    {
+      "id": "fresh",
+      "type": "logic.once",
+      "params": {
+        "key": "{{ $json.id }}"
+      },
+      "position": {
+        "x": 580,
+        "y": 170
+      }
+    },
+    {
+      "id": "draft",
+      "type": "anthropic.ask",
+      "params": {
+        "credential": "claude_key",
+        "prompt": "Write one post for X about this story. Under 240 characters, no hashtags, no emoji, say what happened and why it matters.\n\n{{ $json.title }}\n{{ $json.url }}",
+        "model": "claude-sonnet-5",
+        "system": "You write for a technical audience that dislikes hype.",
+        "maxTokens": 300
+      },
+      "position": {
+        "x": 850,
+        "y": 170
+      }
+    },
+    {
+      "id": "post",
+      "type": "x.post",
+      "params": {
+        "credential": "x_key",
+        "text": "{{ $json.text }}"
+      },
+      "position": {
+        "x": 1120,
+        "y": 170
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "clock",
+      "fromPort": "main",
+      "to": "news",
+      "toPort": "main"
+    },
+    {
+      "from": "news",
+      "fromPort": "main",
+      "to": "fresh",
+      "toPort": "main"
+    },
+    {
+      "from": "fresh",
+      "fromPort": "main",
+      "to": "draft",
+      "toPort": "main"
+    },
+    {
+      "from": "draft",
+      "fromPort": "main",
+      "to": "post",
+      "toPort": "main"
+    }
+  ]
+}

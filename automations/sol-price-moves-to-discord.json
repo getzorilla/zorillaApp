@@ -1,0 +1,81 @@
+{
+  "name": "demo02: SOL Price Moves to Discord",
+  "folder": "Examples",
+  "notes": "Posts to Discord when SOL moves 5% from the last figure it announced, and stays quiet otherwise. Needs a Discord webhook saved as discord_key.",
+  "active": false,
+  "nodes": [
+    {
+      "id": "clock",
+      "type": "core.schedule",
+      "params": {
+        "mode": "every",
+        "every": 10,
+        "unit": "minutes"
+      },
+      "position": {
+        "x": 40,
+        "y": 170
+      }
+    },
+    {
+      "id": "price",
+      "type": "coingecko.price",
+      "params": {
+        "ids": "solana",
+        "currency": "usd"
+      },
+      "position": {
+        "x": 310,
+        "y": 170
+      }
+    },
+    {
+      "id": "moved",
+      "type": "logic.moved",
+      "params": {
+        "value": "{{ $json.solana.usd }}",
+        "amount": 5,
+        "unit": "percent",
+        "direction": "either",
+        "key": "sol"
+      },
+      "position": {
+        "x": 580,
+        "y": 170
+      }
+    },
+    {
+      "id": "say",
+      "type": "discord.post",
+      "params": {
+        "credential": "discord_key",
+        "content": "SOL is {{ $json.moved.direction }} {{ Math.round($json.moved.percent) }}% to ${{ $json.solana.usd }}",
+        "username": "Zorilla"
+      },
+      "position": {
+        "x": 850,
+        "y": 170
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "clock",
+      "fromPort": "main",
+      "to": "price",
+      "toPort": "main"
+    },
+    {
+      "from": "price",
+      "fromPort": "main",
+      "to": "moved",
+      "toPort": "main"
+    },
+    {
+      "from": "moved",
+      "fromPort": "main",
+      "to": "say",
+      "toPort": "main"
+    }
+  ]
+}
